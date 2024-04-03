@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/PlacePicker/static/css/main.53948a5f.css",
+    "main.js": "/PlacePicker/static/js/main.eb4a49eb.js",
+    "static/js/453.148c62b4.chunk.js": "/PlacePicker/static/js/453.148c62b4.chunk.js",
+    "static/media/logo.png": "/PlacePicker/static/media/logo.ce5c7afc5810ff065739.png",
+    "index.html": "/PlacePicker/index.html",
+    "main.53948a5f.css.map": "/PlacePicker/static/css/main.53948a5f.css.map",
+    "main.eb4a49eb.js.map": "/PlacePicker/static/js/main.eb4a49eb.js.map",
+    "453.148c62b4.chunk.js.map": "/PlacePicker/static/js/453.148c62b4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.53948a5f.css",
+    "static/js/main.eb4a49eb.js"
+  ]
+}
