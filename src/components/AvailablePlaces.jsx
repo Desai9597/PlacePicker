@@ -1,14 +1,36 @@
-import { useState, useEffect } from 'react';
+
 import Places from './Places.jsx';
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from '../loc.js';
 import { fetchAvailablePlaces} from '../http.js';
+import { useFetch } from "../hooks/useFetch.js";
+
+async function fetchSortedPlaces() {
+  const places = await fetchAvailablePlaces();
+  return new Promise((resolve,reject) => {
+
+  //Initially before creating new Promise, we cant use async await for below method although it takes time to get location of browser
+  //because getCurrentPosition() does not yeild a promise, but we can use 
+  //the callback pattern to define function to be executed once we get current position.
+  //Browser will provide position object that will contain users coordinates
+  navigator.geolocation.getCurrentPosition((position) => {
+    const sortedPlaces = sortPlacesByDistance(
+      places,
+      position.coords.latitude,
+      position.coords.longitude
+      );
+
+      //resolve will make sure to tell useFetch custom hook function fetchFn that
+      //wiat time is finished and we got response from the promise
+      resolve(sortedPlaces);
+  });
+  }); 
+}
+
+
 
 export default function AvailablePlaces({ onSelectPlace }) {
 
-  const [isFetching, setIsFetching] = useState(false);
-  const [availablePlaces, setAvailablePlaces] = useState([]);
-  const [error, setError] = useState();
 
     /*Start backend> node app.js command first,
   After that npm start in terminal, so that we get different port for frontend ,other than 3000
@@ -41,40 +63,14 @@ export default function AvailablePlaces({ onSelectPlace }) {
   }, []);
  */
 
-  //alternative way by async await
-  useEffect(() => {
-      async function fetchPlaces() {
-        setIsFetching(true);
-        
-        try{
-          
-          //we have to write await because fetchAvailablePlaces is async
-         const places =  await fetchAvailablePlaces();
+  //alternative way by async await. Here we are using async await in custom hook
 
-          //cant use async await for below method although it takes time to get location of browser
-          //because getCurrentPosition() does not yeild a promise, but we can use 
-          //the callback pattern to define function to be executed once we get current position.
-          //Browser will provide position object that will contain users coordinates
-          navigator.geolocation.getCurrentPosition((position) => {
-            const sortedPlaces = sortPlacesByDistance(
-              places,
-              position.coords.latitude,
-              position.coords.longitude
-              );
-            setAvailablePlaces(sortedPlaces);
-            setIsFetching(false);
-          });
-
-        
-        }catch(error){
-          setError({message: error.message || 'Could not find places, please try agian later.'});
-          setIsFetching(false);
-        }        
-       
-      }
-
-      fetchPlaces();
-  }, []);
+  const {
+    isFetching,
+    error,
+    fetchedData: availablePlaces,
+   
+  } = useFetch(fetchSortedPlaces ,[]);
 
   if(error){
     return <Error title="An error occurred" message={error.message} />
